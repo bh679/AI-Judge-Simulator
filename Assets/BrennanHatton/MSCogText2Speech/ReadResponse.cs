@@ -1,0 +1,33 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using BrennanHatton.GPT;
+
+namespace BrennanHatton.AI
+{
+
+	public class ReadResponse : MonoBehaviour
+	{
+		public SpeechManager speechManager;
+		public GPT3 gpt;
+		int length = 0;
+		public PromptWrapper wrapper;
+		
+		void Reset()
+		{
+			speechManager = GameObject.FindObjectOfType<SpeechManager>();
+			gpt = GameObject.FindObjectOfType<GPT3>();
+		}
+		
+		// Update is called once per frame
+		void Update()
+		{
+			if(length != gpt.interactions.Count)
+			{
+				speechManager.SpeakWithSDKPlugin(wrapper.wrapPromopt(gpt.interactions[gpt.interactions.Count-1].GeneratedText));
+				length = gpt.interactions.Count;
+			}
+		}
+	}
+
+}

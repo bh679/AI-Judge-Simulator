@@ -16,11 +16,6 @@
 !/[Aa]ssets/BNG Framework/Scripts/BNG Core.asmdef
 !/[Aa]ssets/BNG Framework/HandPoser/Scripts/BNG.HandPose.asmdef
 /[Aa]ssets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset
-/[Aa]ssets/PolygonHorrorMansion/*
-/[Aa]ssets/PolygonCity/*
-/[Aa]ssets/PolygonPumpkins/*
-/[Aa]ssets/PolygonTown/*
-/[Aa]ssets/PolygonAdventure/*
 /[Aa]ssets/Polygon*/*
 /[Aa]ssets/Ultimate SFX Bundle - HD Remaster/*
 /[Aa]ssets/ExplosiveLLC/*
@@ -28,6 +23,9 @@
 /[Aa]ssets/CleanFlatIcon*
 /[Aa]ssets/FrostweepGames*
 /[Aa]ssets/Dance_MoCap_Collection/*
+/[Aa]ssets/GPT AI Integration/*
+/[Aa]ssets/MSTextToSpeech/*
+/[Aa]ssets/SpeechSDK/*
 
 #Brennan Specific
 /[Aa]ssets/BrennanHatton/Webhooks/*.txt

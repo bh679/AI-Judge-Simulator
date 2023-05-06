@@ -1,5 +1,25 @@
 {
   "dependencies": {
+    "com.brennanhatton.gpt": {
+      "version": "https://github.com/bh679/Unity-GPT-Tools.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.inputsystem": "1.4.4"
+      },
+      "hash": "57839ea8e0d7e32405e89d45f0e01efcf52c1165"
+    },
+    "com.brennanhatton.unitytools": {
+      "version": "https://github.com/bh679/Unity-Tools.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.inputsystem": "1.4.4"
+      },
+      "hash": "aab9304e62b96118098c1bdcb2e6fda1129001d9"
+    },
     "com.unity.collab-proxy": {
       "version": "2.0.0",
       "depth": 0,
@@ -58,6 +78,15 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.performance.profile-analyzer": {
