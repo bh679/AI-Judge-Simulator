@@ -410,9 +410,18 @@ MonoBehaviour:
   newCase: Come up with an abusrd or hilarious accursation to be argued in court
     between two parties.
   nameCase: 'Come up with a name for this case:'
-  announceNewGame: You are a judge in a televised small claims court TV show. Announce
-    a new episode has started
   newBackstory: Come up with a backstory for # in case $, they are a ^
+  newJudeName: Come up with the name of a judge whos initials are GPT
+  announceNewGame: You are # in a televised small claims court TV show. Announce
+    a new episode has started, and ask if everyone is present?
+  announceNewPlayer: Announce # entering the court room.
+  announcePlayersTurn: Announce an event that has lead to #'s time to speak in the
+    courtroom in the case of %. Read out their backstory of "^" and ask what they
+    have to say
+  drawConclusion: 'You are # in a televised small claims court TV show. You are creating
+    a story and drawing your conclusion and announcing the verdict based on the following
+    evidence.  Justify your verdict, and provide a funny, absurd and unfitting punishment
+    and lesson to be learnt '
 --- !u!1 &583202970
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,7 +524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &588540273
 MonoBehaviour:
   m_ObjectHideFlags: 0

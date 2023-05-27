@@ -5,27 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using BrennanHatton.GPT;
 using OpenAI.Integrations.VoiceRecorder;
-//Teams
-//Players
-//Judge
-//Roles
-//Backstory / Case
-
-/*public enum Role
-{
-	Plantive = 0, // prosecutor
-	Defendant = 1,// despodant
-	Victim = 2,
-	Perpetrator = 3, // Accusted 
-	Witnesses = 4,
-	Judge = 5,
-	JuryMember = 6,
-	Audience = 7, // Gallery
-	Press = 8 // Jounro - Real tweet button
-	//SketchArtist// - MJ - Stable Diffusion
-}*/
-
-
 
 [System.Serializable]
 public class Player
@@ -60,6 +39,22 @@ public class Player
 		Debug.Log("SetBackstory");
 		backstory = data.generatedText; 
 	}
+	
+	public string StatementSummary()
+	{
+		string summary = role.name + " " + name;
+		
+		summary += " has made the following statements:\n";
+		
+		for(int i = 0; i < statements.Count; i++)
+		{
+			summary += statements[i].repsonse+"\n";
+		}
+		
+		summary += "end of statements for " + role.name + " " +  name;
+		
+		return summary;
+	}
 }
 
 [System.Serializable]
@@ -80,12 +75,12 @@ public class Role
 		Perpetrator = new Role("Perpetrator", Party.Plaintiff),
 		Witness = new Role("Witness", Party.Either),
 		Judge = new Role("Judge", Party.Neutral),
-		JuryMember = new Role("JuryMember", Party.Neutral),
-		Audience = new Role("Audience", Party.Either),
-		Press = new Role("Press", Party.Neutral);
+		JuryMember = new Role("Jury Member", Party.Neutral),
+		Audience = new Role("Audience Member", Party.Either),
+		Press = new Role("Member of the Press", Party.Neutral);
 
-	public static Role[] roles = new Role[9] {
-		Plaintiff, Defendant, Victim, Perpetrator, Witness, Judge, Audience, JuryMember, Press
+	public static Role[] roles = new Role[8] {
+		Plaintiff, Defendant, Victim, Perpetrator, Witness, Audience, JuryMember, Press
 	};
 }
 
@@ -148,19 +143,6 @@ public enum Party
 	Neutral = 2,
 	Either = 3
 }
-	
-/*[System.Serializable]
-public class Party
-{
-	
-	public Party side;
-	public List<Player> players = new List<Player>();
-	
-	public Party(Party party)
-	{
-		this.side = party;
-	}
-}*/
 
 [System.Serializable]
 public class Judge
@@ -185,13 +167,21 @@ public class GameManager : MonoBehaviour
 	
 	public void NewGame()
 	{
-		//parties = new Party[3] {new Party(), new Party(""), new Party("")};
+		judge = new Judge();
+		judge.name = "Judge Gina Patric Terry";
 		
 		InteractionEvent callback = new InteractionEvent();
-		callback.AddListener(VoiceResponse);
+		callback.AddListener((InteractionData)=>{
+			
+			judge.name = InteractionData.generatedText;
+			GenerateAndSpeak(PromptManager.Instance.announceNewGame.Replace("#","Judge "+judge.name));
+		});
 		
-		Gpt.Execute(PromptManager.Instance.announceNewGame,
+		Gpt.Execute(PromptManager.Instance.newJudeName,
 			callback);
+		
+		
+		
 			
 		roles = new List<Role>();
 		for(int i =0 ; i < Role.roles.Length; i++)
@@ -201,14 +191,15 @@ public class GameManager : MonoBehaviour
 		
 	}
 	
-	public void AddPlayer()
+	public void AddPlayer(string name)
 	{
 		Player newPlayer = new Player(Gpt);
 		players.Add(newPlayer);
 		
+		newPlayer.name = name;
 		newPlayer.SetRole(GetRandomRole());
-		//assign party
-		//newPlayer.party = parties[Convert.ToInt32(parties[0].players.Count > parties[1].players.Count)];
+		
+		GenerateAndSpeak(PromptManager.Instance.announceNewPlayer.Replace("#", newPlayer.name) + " as a/the " + newPlayer.role.name);
 	}
 	
 	Role GetRandomRole()
@@ -231,10 +222,7 @@ public class GameManager : MonoBehaviour
 		trial = new Trial();
 		trial.SetTrial(Gpt, SetBackstories);
 		
-		judge = new Judge();
 		judge.trial = trial;
-		judge.name = "Judge Gina Patric Terry";
-		
 		
 	}
     
@@ -246,11 +234,20 @@ public class GameManager : MonoBehaviour
 		}
 	}
 	
+	//cut off, skip or queue, jump queue
+	void GenerateAndSpeak(string prompt)
+	{
+		InteractionEvent callback = new InteractionEvent();
+		callback.AddListener(VoiceResponse);
+		
+		Gpt.Execute(prompt,
+			callback);
+	}
 	
 	void VoiceResponse(InteractionData data)
 	{
 		if(!JudgeVoiceSpeaker.GetComponent<AudioSource>().isPlaying)
-			JudgeVoiceSpeaker.SpeakSentence(trial.accusation);
+			JudgeVoiceSpeaker.SpeakSentence(data.generatedText);
 	}
 	
     // Start is called before the first frame update
@@ -258,33 +255,81 @@ public class GameManager : MonoBehaviour
     {
 	    NewGame();
 	    
-	    AddPlayer();
-	    AddPlayer();
-		
-	    NewCase();
-	    
-	    //StartCoroutine(_startWhenReady());
+	    StartCoroutine(_startWhenReady());
 	    
     }
     
 	IEnumerator _startWhenReady()
 	{
+		
+		yield return new WaitForSeconds(15.5f);
+		while(JudgeVoiceSpeaker.GetComponent<AudioSource>().isPlaying)
+			yield return new WaitForSeconds(0.5f);
+			
+		AddPlayer("Faith");
+		
+		yield return new WaitForSeconds(15.5f);
+		while(JudgeVoiceSpeaker.GetComponent<AudioSource>().isPlaying)
+			yield return new WaitForSeconds(0.5f);
+			
+		AddPlayer("Brennan");
+		
+		yield return new WaitForSeconds(15.5f);
+		while(JudgeVoiceSpeaker.GetComponent<AudioSource>().isPlaying)
+			yield return new WaitForSeconds(0.5f);
+		
+		NewCase();
+		
 		while(!trial.ready)
 			yield return new WaitForSeconds(0.5f);
 			
 		StartGame();
+		
+		
+		while(playersTurn < players.Count)
+		{
+			yield return new WaitForSeconds(15.5f);
+			while(JudgeVoiceSpeaker.GetComponent<AudioSource>().isPlaying)
+				yield return new WaitForSeconds(0.5f);
+	
+	
+			NextPlayer();
+		}
+		
+		DrawConclusion();
 	}
     
 	public void StartGame()
 	{
 		Debug.Log("StartGame");
+		
 		//Read out trail.
 		JudgeVoiceSpeaker.SpeakSentence(trial.accusation);
+		
 	}
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	
+	int playersTurn = 0;
+	public void NextPlayer()
+	{
+		Player currentPlayer = players[playersTurn];
+		GenerateAndSpeak(PromptManager.Instance.announcePlayersTurn.Replace("#",currentPlayer.name + " " + currentPlayer.role.name).Replace("%",trial.name).Replace("^",currentPlayer.backstory));
+		
+		playersTurn++;
+	}
+	
+	public void DrawConclusion()
+	{
+		string playerDetails = "";
+		
+		for(int i = 0; i < players.Count; i++)
+		{
+			playerDetails += players[i].StatementSummary();
+		}
+		
+		GenerateAndSpeak(
+			PromptManager.Instance.drawConclusion.Replace("#",judge.name) + trial.details +"\n\n" + playerDetails
+		);
+	}
+	
+	
 }
